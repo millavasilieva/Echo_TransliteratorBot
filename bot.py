@@ -30,7 +30,7 @@ async def send_message(message: types.Message):
     user_id = message.from_user.id
     text = message.text
     text = text.lower().replace('ь', '').replace('я', 'иа').replace('щ', 'шч').replace('й', 'и').replace('ъ', 'ие').replace('х', 'кх').replace('ю', 'иу')
-    text = " ".join([i.capitalize() for i in text.split(" ")])
+    text = " ".join([i.upper() for i in text.split(" ")])
     text = translit(text, language_code='ru', reversed=True)
 
     logging.info(f'{user_name=} {user_id=} sent message: {text}')
