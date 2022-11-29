@@ -1,16 +1,15 @@
-import os
+# import os
 import logging
 
 from aiogram import Bot, Dispatcher, executor, types
 
-# from config import TOKEN
+from config import TOKEN
 
-import transliterate
-from transliterate import translit
+from translit import translit_dict
 
 logging.basicConfig(level=logging.INFO, filename="mylog.log")
 
-TOKEN = os.getenv('TOKEN')
+# TOKEN = os.getenv('TOKEN')
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -29,12 +28,17 @@ async def send_message(message: types.Message):
     user_name = message.from_user.full_name
     user_id = message.from_user.id
     text = message.text
-    text = text.lower().replace('ь', '').replace('я', 'иа').replace('щ', 'шч').replace('й', 'и').replace('ъ', 'ие').replace('х', 'кх').replace('ю', 'иу')
-    text = " ".join([i.upper() for i in text.split(" ")])
-    text = translit(text, language_code='ru', reversed=True)
+    translit_list = []
+    for w in text.lower():
+        try:
+            translit_list.append(translit_dict[w])
+        except:
+            translit_list.append(w)
+            
+    translit_list = "".join(translit_list)
 
-    logging.info(f'{user_name=} {user_id=} sent message: {text}')
-    await bot.send_message(user_id, text)
+    logging.info(f'{user_name=} {user_id=} sent message: {translit_list}')
+    await bot.send_message(user_id, translit_list)
 
 
 if __name__ == '__main__':
